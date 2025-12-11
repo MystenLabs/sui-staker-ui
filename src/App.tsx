@@ -3,8 +3,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { SuiClientProvider, WalletProvider } from '@mysten/dapp-kit'
 import { getFullnodeUrl } from '@mysten/sui/client'
 import '@mysten/dapp-kit/dist/index.css'
-import { NetworkSelector, getStoredNetwork, getStoredCustomUrl } from './NetworkSelector'
-import type { NetworkType } from './NetworkSelector'
+import { NetworkSelector } from './NetworkSelector'
+import { getStoredNetwork, getStoredCustomUrl, type NetworkType } from './utils'
 import { StakingForm } from './StakingForm'
 import './App.css'
 
@@ -47,7 +47,7 @@ function App() {
             </header>
 
             <div className="container">
-              <h1>Sui Staking</h1>
+              <h1>Sui Staker</h1>
               <StakingForm />
             </div>
           </div>

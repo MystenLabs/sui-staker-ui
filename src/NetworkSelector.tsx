@@ -1,27 +1,16 @@
 import { useState, useEffect, useRef } from 'react'
-
-export type NetworkType = 'mainnet' | 'testnet' | 'custom'
-
-const STORAGE_KEY_NETWORK = 'sui-stake-network'
-const STORAGE_KEY_CUSTOM_URL = 'sui-stake-custom-url'
+import {
+  type NetworkType,
+  saveStoredNetwork,
+  saveStoredCustomUrl
+} from './utils'
+import { useClickOutside } from './hooks'
 
 interface NetworkSelectorProps {
   network: NetworkType
   customUrl: string
   onNetworkChange: (network: NetworkType) => void
   onCustomUrlChange: (url: string) => void
-}
-
-export function getStoredNetwork(): NetworkType {
-  const stored = localStorage.getItem(STORAGE_KEY_NETWORK)
-  if (stored === 'mainnet' || stored === 'testnet' || stored === 'custom') {
-    return stored
-  }
-  return 'mainnet'
-}
-
-export function getStoredCustomUrl(): string {
-  return localStorage.getItem(STORAGE_KEY_CUSTOM_URL) || ''
 }
 
 const networkLabels: Record<NetworkType, string> = {
@@ -44,19 +33,12 @@ export function NetworkSelector({
     setTempCustomUrl(customUrl)
   }, [customUrl])
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  useClickOutside(dropdownRef, () => {
+    setIsOpen(false)
+  })
 
   const handleNetworkSelect = (value: NetworkType) => {
-    localStorage.setItem(STORAGE_KEY_NETWORK, value)
+    saveStoredNetwork(value)
     onNetworkChange(value)
     if (value !== 'custom') {
       setIsOpen(false)
@@ -65,7 +47,7 @@ export function NetworkSelector({
 
   const handleCustomUrlSave = () => {
     if (tempCustomUrl.trim()) {
-      localStorage.setItem(STORAGE_KEY_CUSTOM_URL, tempCustomUrl.trim())
+      saveStoredCustomUrl(tempCustomUrl.trim())
       onCustomUrlChange(tempCustomUrl.trim())
     }
   }
