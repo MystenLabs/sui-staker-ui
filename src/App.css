@@ -13,6 +13,182 @@
   right: 0;
   padding: 1rem 1.5rem;
   z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+/* Constrain Connect Wallet button height */
+.header [data-dapp-kit] {
+  height: 40px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.header [data-dapp-kit] button {
+  height: 40px !important;
+  max-height: 40px !important;
+  min-height: 40px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.header [data-dapp-kit] button > div {
+  height: auto !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+.network-selector {
+  position: relative;
+}
+
+.network-selector-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  height: 40px;
+  padding: 0 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: none;
+  border-radius: 0.75rem;
+  background: #4da2ff;
+  color: white;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s, box-shadow 0.15s;
+  box-shadow: 0 4px 14px 0 rgba(77, 162, 255, 0.39);
+}
+
+.network-selector-button:hover {
+  background: #3b8ee6;
+  box-shadow: 0 6px 20px rgba(77, 162, 255, 0.5);
+}
+
+.network-selector-chevron {
+  transition: transform 0.2s;
+}
+
+.network-selector-chevron.open {
+  transform: rotate(180deg);
+}
+
+.network-selector-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  min-width: 200px;
+  padding: 0.5rem;
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.network-selector-option {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.network-selector-option:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.network-selector-option input[type="radio"] {
+  display: none;
+}
+
+.network-selector-radio {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  position: relative;
+  transition: border-color 0.15s;
+}
+
+.network-selector-option input[type="radio"]:checked + .network-selector-radio {
+  border-color: #4da2ff;
+}
+
+.network-selector-option input[type="radio"]:checked + .network-selector-radio::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: #4da2ff;
+  border-radius: 50%;
+}
+
+.network-selector-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.network-selector-custom-url {
+  padding: 0.5rem 0.75rem 0.25rem;
+}
+
+.network-selector-custom-url input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  background: rgba(0, 0, 0, 0.3);
+  color: inherit;
+  font-family: inherit;
+}
+
+.network-selector-custom-url input:focus {
+  outline: none;
+  border-color: #4da2ff;
+}
+
+.network-selector-custom-url input::placeholder {
+  color: #666;
+}
+
+@media (prefers-color-scheme: light) {
+  .network-selector-dropdown {
+    background: white;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .network-selector-option:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .network-selector-radio {
+    border-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .network-selector-label {
+    color: rgba(0, 0, 0, 0.9);
+  }
+
+  .network-selector-custom-url input {
+    background: rgba(0, 0, 0, 0.05);
+    border-color: rgba(0, 0, 0, 0.15);
+  }
 }
 
 .container {
