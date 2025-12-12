@@ -119,7 +119,7 @@ export function ValidatorSelector({ value, onChange, onValidatorSelect, disabled
     <div className="validator-selector" ref={dropdownRef}>
       <input
         type="text"
-        placeholder={loading ? 'Loading validators...' : 'Select or enter validator address...'}
+        placeholder={loading ? 'Loading validators...' : 'Select active or enter custom validator address...'}
         value={isOpen ? (search || inputValue) : displayValue}
         onChange={handleInputChange}
         onFocus={handleInputFocus}

@@ -47,7 +47,7 @@ function App() {
             </header>
 
             <div className="container">
-              <h1>Sui Staker</h1>
+              <h1>Sui Validator Tools</h1>
               <StakingForm />
             </div>
           </div>

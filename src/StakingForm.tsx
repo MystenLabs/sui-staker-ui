@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   ConnectButton,
   useCurrentAccount,
@@ -7,7 +7,7 @@ import {
 } from '@mysten/dapp-kit'
 import { Transaction } from '@mysten/sui/transactions'
 import { ValidatorSelector } from './ValidatorSelector'
-import { parseSuiAmount } from './utils'
+import { parseSuiAmount, formatSuiAmount } from './utils'
 import { SUI_SYSTEM_STATE_OBJECT_ID, SUI_SYSTEM_MODULE, TX_EXPLORER_BASE_URL } from './consts'
 import { type Validator } from './validator'
 import { ValidatorDetails } from './ValidatorDetails'
@@ -19,13 +19,29 @@ interface StatusState {
   duration?: number
 }
 
+function getValidatorFromUrl(): string {
+  const params = new URLSearchParams(window.location.search)
+  return params.get('validator') || ''
+}
+
+function updateValidatorInUrl(address: string) {
+  const url = new URL(window.location.href)
+  if (address) {
+    url.searchParams.set('validator', address)
+  } else {
+    url.searchParams.delete('validator')
+  }
+  window.history.replaceState({}, '', url.toString())
+}
+
 export function StakingForm() {
-  const [validatorAddress, setValidatorAddress] = useState('')
+  const [validatorAddress, setValidatorAddress] = useState(getValidatorFromUrl)
   const [amount, setAmount] = useState('')
   const [status, setStatus] = useState<StatusState>({ type: '', message: '' })
   const [selectedValidator, setSelectedValidator] = useState<Validator | null>(null)
   const [myStake, setMyStake] = useState<bigint | null | undefined>(null)
   const [stakeRefreshKey, setStakeRefreshKey] = useState(0)
+  const [balance, setBalance] = useState<bigint | null>(null)
 
   const currentAccount = useCurrentAccount()
   const suiClient = useSuiClient()
@@ -60,9 +76,25 @@ export function StakingForm() {
       })
   }, [currentAccount, selectedValidator, suiClient, stakeRefreshKey])
 
-  const handleValidatorSelect = useCallback((validator: Validator | null) => {
-    setSelectedValidator(validator)
-  }, [])
+  useEffect(() => {
+    if (!currentAccount) {
+      setBalance(null)
+      return
+    }
+
+    suiClient.getBalance({ owner: currentAccount.address })
+      .then((result) => {
+        setBalance(BigInt(result.totalBalance))
+      })
+      .catch((e) => {
+        console.error('Failed to fetch balance:', e)
+        setBalance(null)
+      })
+  }, [currentAccount, suiClient, stakeRefreshKey])
+
+  useEffect(() => {
+    updateValidatorInUrl(validatorAddress)
+  }, [validatorAddress])
 
   const amountError = useMemo(() => {
     if (!amount) return null
@@ -123,7 +155,7 @@ export function StakingForm() {
 
       setStatus({
         type: 'success',
-        message: `Stake successful!`,
+        message: 'Stake successful!',
         txDigest: result.digest,
         duration,
       })
@@ -145,8 +177,7 @@ export function StakingForm() {
         <ValidatorSelector
           value={validatorAddress}
           onChange={setValidatorAddress}
-          onValidatorSelect={handleValidatorSelect}
-          disabled={!currentAccount}
+          onValidatorSelect={setSelectedValidator}
         />
       </div>
 
@@ -155,16 +186,20 @@ export function StakingForm() {
       )}
 
       <div className="form-group">
-        <label htmlFor="amount">Amount (SUI)</label>
+        <div className="label-row">
+          <label htmlFor="amount">Amount (SUI)</label>
+          {balance !== null && (
+            <span className="balance-hint">Max: {formatSuiAmount(balance, 4)} SUI</span>
+          )}
+        </div>
         <input
           id="amount"
           type="number"
-          placeholder="1.0"
+          placeholder="Min 1 SUI"
           min="1"
           step="0.1"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          disabled={!currentAccount}
           className={amountError ? 'input-error' : ''}
         />
         {amountError && <span className="field-error">{amountError}</span>}
@@ -173,12 +208,16 @@ export function StakingForm() {
       <button
         className="stake-button"
         onClick={handleStake}
-        disabled={!currentAccount || !selectedValidator || status.type === 'loading' || !!amountError}
+        disabled={!currentAccount || !selectedValidator || status.type === 'loading' || !amount || !!amountError}
       >
         {status.type === 'loading' ? 'Processing...' : 'Stake'}
       </button>
 
-      {status.message && (
+      {!currentAccount && (
+        <div className="status error">Please connect your wallet to stake.</div>
+      )}
+
+      {status.message && currentAccount && (
         <div className={`status ${status.type}`}>
           {status.message}
           {status.txDigest && (
